@@ -51,22 +51,8 @@ react {
     // hermesFlags = ["-O", "-output-source-map"]
 }
 
-/**
- * Set this to true to Run Proguard on Release builds to minify the Java bytecode.
- */
 def enableProguardInReleaseBuilds = false
 
-/**
- * The preferred build flavor of JavaScriptCore (JSC)
- *
- * For example, to use the international variant, you can use:
- * `def jscFlavor = 'org.webkit:android-jsc-intl:+'`
- *
- * The international variant includes ICU i18n library and necessary data
- * allowing to use e.g. `Date.toLocaleString` and `String.localeCompare` that
- * give correct results when using with locales other than en-US. Note that
- * this variant is about 6MiB larger per architecture than default.
- */
 def jscFlavor = 'org.webkit:android-jsc:+'
 
 android {
@@ -82,7 +68,20 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    dependencies {
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-base:18.0.1'
+    // other dependencies...
+}
     signingConfigs {
+        release {
+            if (project.hasProperty('MYAPP_UPLOAD_STORE_FILE')) {
+                storeFile file(MYAPP_UPLOAD_STORE_FILE)
+                storePassword MYAPP_UPLOAD_STORE_PASSWORD
+                keyAlias MYAPP_UPLOAD_KEY_ALIAS
+                keyPassword MYAPP_UPLOAD_KEY_PASSWORD
+            }
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'
@@ -97,7 +96,7 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
