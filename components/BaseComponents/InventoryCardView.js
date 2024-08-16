@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState, useRef} from 'react';
 import {
   Dimensions,
   Image,
@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import {
   ArrowRightStartOnRectangleIcon,
+  HeartIcon,
   ShareIcon,
   StarIcon,
 } from 'react-native-heroicons/solid';
@@ -23,6 +24,7 @@ import {useNavigation} from '@react-navigation/native';
 import {Routes} from '../../navigation/Routes';
 import {supabase} from '../../createClinet';
 import ShopContext from '../../context/ShopContext';
+import Carousel from 'react-native-snap-carousel';
 
 var {width, height} = Dimensions.get('window');
 
@@ -39,6 +41,7 @@ export default function InventoryCardView({data}) {
   const [myShops, setMyShops] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [qty, setQty] = useState('');
+  const [watchListItemsDetail, setWatchListItemsDetail] = useState([]);
 
   const fetchMyShops = async () => {
     if (userId && userId.id_user) {
@@ -60,8 +63,53 @@ export default function InventoryCardView({data}) {
   };
 
   const fetchDataProducts = async () => {
-    const {data, error} = await supabase.from('items_inventory').select('*');
-    setItemsInventory(data);
+    try {
+      const {data, error} = await supabase.from('items_inventory').select('*');
+
+      if (error) {
+        console.error('Error fetching inventory items:', error.message);
+        return;
+      }
+
+      if (!data || !Array.isArray(data)) {
+        console.error('Unexpected data format:', data);
+        return;
+      }
+
+      // Fetch images for each inventory item
+      const fetchImages = async inventoryId => {
+        const {data: images, error: imagesError} = await supabase
+          .from('item_images')
+          .select('image_path')
+          .eq('item_id', inventoryId);
+
+        if (imagesError) {
+          console.error(
+            `Error fetching images for inventory_id ${inventoryId}:`,
+            imagesError.message,
+          );
+          return [];
+        }
+
+        return images.map(img => img.image_path);
+      };
+
+      const itemsWithImages = await Promise.all(
+        data.map(async item => {
+          const images = await fetchImages(item.id);
+          return {
+            ...item,
+            images: images.length > 0 ? images : [DummyImage], // Fallback to DummyImage if no images found
+          };
+        }),
+      );
+
+      setItemsInventory(itemsWithImages);
+
+      console.log('ItemInventory  With Images are is  ->  ', itemsWithImages);
+    } catch (e) {
+      console.error('Error in fetchDataProducts:', e);
+    }
   };
 
   useEffect(() => {
@@ -158,14 +206,127 @@ export default function InventoryCardView({data}) {
       fetchDataProducts();
     }
   };
+  const renderCarouselItem = ({item}) => (
+    <Image
+      style={{
+        height: height * 0.3,
+        width: width * 0.45,
+      }}
+      source={{uri: item}}
+    />
+  );
 
+  const carouselRef = useRef(null);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (carouselRef.current) {
+        carouselRef.current.snapToNext();
+      }
+    }, 1500); // Slide every 1 second
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleHeart = async itemId => {
+    // console.log('Heart Color ', fav);
+    // console.log('WatchList ItemId:', itemId);
+
+    const {data, error} = await supabase
+      .from('watchList')
+      .select('*')
+      .eq('inventory_id', itemId)
+      .eq('user_id', userId.id_user);
+
+    if (error) {
+      console.error('Error fetching from WatchList:', error);
+      return;
+    }
+
+    //  console.log('Getting from WatchList:', data);
+
+    if (data.length === 0) {
+      console.log('Inserting into WatchList');
+      const {data: watchListData, error: watchListError} = await supabase
+        .from('watchList') // Correct table name here
+        .insert([
+          {
+            user_id: userId.id_user,
+            inventory_id: itemId,
+          },
+        ]);
+      setFav(true);
+      if (watchListError) {
+        console.error('Error inserting into WatchList:', watchListError);
+      } else {
+        setFav(true);
+        console.log(' Added into WatchList ', watchListData);
+      }
+    } else {
+      const response = await supabase
+        .from('watchList')
+        .delete()
+        .eq('inventory_id', itemId)
+        .eq('user_id', userId.id_user);
+      setFav(false);
+      if (response) {
+        setFav(false);
+        console.log('removed from WatchList:');
+      } else {
+        //Alert.alert('Faild while deleting item');
+      }
+    }
+    console.log('Heart Color After ', fav);
+  };
+
+  //getting from watchList
+  const GettingFromWatchList = async () => {
+    let watchListItems = [];
+
+    if (userId && userId.id_user) {
+      const {data: watchListData, error: watchListError} = await supabase
+        .from('watchList')
+        .select('inventory_id')
+        .eq('user_id', userId.id_user);
+
+      if (watchListError) {
+        console.error('Error fetching watch list data:', watchListError);
+        return;
+      }
+
+      // Extract item IDs from WatchList
+      const watchListItemIds = watchListData.map(
+        watchItem => watchItem.inventory_id,
+      );
+
+      // Map through shopItems and check if each item is in the WatchList
+      watchListItems = itemsInventory.map(shopItem => {
+        return watchListItemIds.includes(shopItem.id) ? shopItem.id : null;
+      });
+    } else {
+      // If userId is not defined or no user, all watchListItems will be null
+      watchListItems = itemsInventory.map(() => null);
+    }
+
+    //console.log('Inventory-Items in WatchList or null: ', watchListItems);
+    setWatchListItemsDetail(watchListItems);
+  };
+
+  useEffect(() => {
+    GettingFromWatchList();
+  }, [watchListItemsDetail]);
   return (
     <SafeAreaView>
-      <View style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          flexWrap: 'wrap',
+        }}>
         {itemsInventory.map((item, index) => {
           if (item.qty > 0) {
             return (
               <TouchableOpacity
+                style={{marginBottom: -35}}
                 key={index}
                 onPress={() =>
                   navigation.navigate(Routes.InventoryItemDetail, item)
@@ -203,26 +364,36 @@ export default function InventoryCardView({data}) {
                   </View>
 
                   <TouchableOpacity
-                    onPress={() => (fav ? setFav(false) : setFav(true))}
+                    onPress={() => handleHeart(item.id)}
                     style={{
                       position: 'absolute',
                       zIndex: 0.5,
                       marginLeft: 152,
                       marginTop: 5,
                     }}>
-                    <HeartIconOutline size={19} color="black" />
+                    <HeartIcon
+                      size={19}
+                      color={
+                        watchListItemsDetail.includes(item?.id)
+                          ? 'red'
+                          : 'white'
+                      }
+                    />
                   </TouchableOpacity>
 
-                  <Image
-                    style={{
-                      height: height * 0.3,
-                      width: width * 0.45,
-                      overflow: 'hidden',
-                    }}
-                    source={{
-                      uri: item.image_path || DummyImage,
-                    }}
-                  />
+                  <View>
+                    <Carousel
+                      ref={carouselRef}
+                      data={item.images}
+                      renderItem={renderCarouselItem}
+                      sliderWidth={width * 0.45}
+                      itemWidth={width * 0.45}
+                      loop={true}
+                      autoplay={true}
+                      autoplayInterval={2000}
+                    />
+                  </View>
+                  {/*
                   {item.owner_id !== userId.id_user ? (
                     <View style={styles.container}>
                       <TouchableOpacity
@@ -315,6 +486,7 @@ export default function InventoryCardView({data}) {
                   ) : (
                     ''
                   )}
+                  */}
 
                   <View
                     style={{
@@ -332,8 +504,8 @@ export default function InventoryCardView({data}) {
                           fontWeight: 'bold',
                           marginLeft: 10,
                         }}>
-                        {' '}
-                        {item.price}
+                        {'₹'}
+                        {item.base_price}
                       </Text>
                     </View>
                     <View
@@ -344,7 +516,16 @@ export default function InventoryCardView({data}) {
                       }}>
                       <Text style={{color: 'black'}}>Description</Text>
                       <View>
-                        <Text>{item.description}</Text>
+                        <Text
+                          style={{
+                            marginLeft: 8,
+                            color: 'black',
+                            fontWeight: 'bold',
+                          }}>
+                          {item.description.length > 10
+                            ? item.description.slice(0, 10) + '...'
+                            : item.description}
+                        </Text>
                       </View>
                       <ArrowRightStartOnRectangleIcon
                         style={{

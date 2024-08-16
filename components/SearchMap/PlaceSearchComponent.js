@@ -9,7 +9,7 @@ const PlaceSearchComponent = () => {
         apiKey="AIzaSyC7u4_1QP4fLl3CcJfo0cWmcEI-HHax3F8"
         onChangeText={data => console.log(data)} // required *
         onClose={data => console.log(data)}
-        country="US" // optional
+        country="INDIA" // optional
         coordinate={true} // optional
         removeImg={true} // optional
         StatusBarColor="#FF5733" // optional *only for android

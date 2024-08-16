@@ -20,7 +20,7 @@ import {Dropdown} from 'react-native-element-dropdown';
 import {AtSymbolIcon} from 'react-native-heroicons/outline';
 import CheckBox from 'react-native-check-box';
 
-const ShopAddItem = () => {
+const ShopAddItem = props => {
   const occasionData = [
     {value: '1', name: 'Wedding'},
     {value: '2', name: 'Traditional attire'},
@@ -46,8 +46,9 @@ const ShopAddItem = () => {
     Black: 'false',
   });
 
-  const route = useRoute();
-  const item = route.params;
+  //const route = useRoute(props);
+  const item = props.item;
+  //const item = route.params;
   const {shopId, vendorId, userId} = useContext(ShopContext);
   const [media, setMedia] = useState([]);
   const [name, setName] = useState('');
@@ -332,189 +333,188 @@ const ShopAddItem = () => {
 
   return (
     <View>
-      <ScrollView>
-        <View>
-          <View
+      <View>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}>
+          <Text
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-around',
+              marginTop: 20,
+              fontWeight: 'bold',
+              fontSize: 17,
             }}>
-            <Text
-              style={{
-                marginTop: 20,
-                fontWeight: 'bold',
-                fontSize: 17,
-              }}>
-              Name{' '}
-            </Text>
-            <TextInput
-              placeholder="Enter item name"
-              style={{borderBottomWidth: 0.5, width: 250}}
-              onChangeText={input => setName(input)}
-            />
-          </View>
-          <View
+            Name{' '}
+          </Text>
+          <TextInput
+            placeholder="Enter item name"
+            style={{borderBottomWidth: 0.5, width: 250}}
+            onChangeText={input => setName(input)}
+          />
+        </View>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}>
+          <Text
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-around',
+              marginTop: 20,
+              fontWeight: 'bold',
+              fontSize: 17,
             }}>
-            <Text
-              style={{
-                marginTop: 20,
-                fontWeight: 'bold',
-                fontSize: 17,
-              }}>
-              Description{' '}
-            </Text>
-            <TextInput
-              placeholder="Enter item description"
-              style={{borderBottomWidth: 0.5, width: 250, marginLeft: -30}}
-              onChangeText={input => setDescription(input)}
-            />
-          </View>
-          <View
+            Description{' '}
+          </Text>
+          <TextInput
+            placeholder="Enter item description"
+            style={{borderBottomWidth: 0.5, width: 250, marginLeft: -30}}
+            onChangeText={input => setDescription(input)}
+          />
+        </View>
+        <View
+          style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+          }}>
+          <Text
             style={{
-              display: 'flex',
-              flexDirection: 'row',
-              justifyContent: 'space-around',
+              marginTop: 20,
+              fontWeight: 'bold',
+              fontSize: 17,
             }}>
-            <Text
-              style={{
-                marginTop: 20,
-                fontWeight: 'bold',
-                fontSize: 17,
-              }}>
-              Price{' '}
-            </Text>
-            <TextInput
-              placeholder="Enter item price"
-              style={{borderBottomWidth: 0.5, width: 250}}
-              onChangeText={input => setPrice(input)}
-            />
-          </View>
-          <View style={{marginTop: 10}}>
-            <View style={BrandAttributeStyle.container}>
-              {renderLabel()}
-              <Dropdown
-                style={[
-                  BrandAttributeStyle.dropdown,
-                  isFocus && {borderColor: 'blue'},
-                ]}
-                placeholderStyle={BrandAttributeStyle.placeholderStyle}
-                selectedTextStyle={BrandAttributeStyle.selectedTextStyle}
-                inputSearchStyle={BrandAttributeStyle.inputSearchStyle}
-                iconStyle={BrandAttributeStyle.iconStyle}
-                data={data}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={!isFocus ? 'Select Brand' : '...'}
-                searchPlaceholder="Search..."
-                value={value}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                  setValue(item.value);
-                  console.log(item.value);
-                  setIsFocus(false);
-                }}
-                renderLeftIcon={() => (
-                  <AtSymbolIcon
-                    style={BrandAttributeStyle.icon}
-                    color={isFocus ? 'blue' : 'black'}
-                    name="Safety"
-                    size={20}
-                  />
-                )}
-              />
-            </View>
-          </View>
-          <View style={{marginLeft: 20, marginTop: 20}}>
-            <Text style={{fontSize: 20, marginBottom: 4}}>Select Colour</Text>
-            <View style={{display: 'flex'}}>
-              {occasionData.map((item, index) => (
-                <CheckBox
-                  key={index}
-                  isChecked={selectedColour.includes(item.value)}
-                  onClick={() => handleColourCheck(item.value)}
-                  rightText={item.name}
-                  rightTextStyle={{
-                    fontSize: 19,
-                    color: selectedColour.includes(item.value)
-                      ? 'green'
-                      : 'black',
-                    fontWeight: 'bold',
-                  }}
-                  checkedCheckBoxColor="green"
-                  uncheckedCheckBoxColor="black"
+            Price{' '}
+          </Text>
+          <TextInput
+            placeholder="Enter item price"
+            style={{borderBottomWidth: 0.5, width: 250}}
+            onChangeText={input => setPrice(input)}
+          />
+        </View>
+        <View style={{marginTop: 10}}>
+          <View style={BrandAttributeStyle.container}>
+            {renderLabel()}
+            <Dropdown
+              style={[
+                BrandAttributeStyle.dropdown,
+                isFocus && {borderColor: 'blue'},
+              ]}
+              placeholderStyle={BrandAttributeStyle.placeholderStyle}
+              selectedTextStyle={BrandAttributeStyle.selectedTextStyle}
+              inputSearchStyle={BrandAttributeStyle.inputSearchStyle}
+              iconStyle={BrandAttributeStyle.iconStyle}
+              data={data}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isFocus ? 'Select Brand' : '...'}
+              searchPlaceholder="Search..."
+              value={value}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={item => {
+                setValue(item.value);
+                console.log(item.value);
+                setIsFocus(false);
+              }}
+              renderLeftIcon={() => (
+                <AtSymbolIcon
+                  style={BrandAttributeStyle.icon}
+                  color={isFocus ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
                 />
-              ))}
-            </View>
+              )}
+            />
           </View>
-          <View style={{marginLeft: 20, marginTop: 20}}>
-            <Text style={{fontSize: 20, marginBottom: 4}}>Select Occasion</Text>
-            <View style={{display: 'flex'}}>
-              {occasionData.map((item, index) => (
-                <CheckBox
-                  key={index}
-                  isChecked={selectedOccasions.includes(item.value)}
-                  onClick={() => handleOccasionCheck(item.value)}
-                  rightText={item.name}
-                  rightTextStyle={{
-                    fontSize: 19,
-                    color: selectedOccasions.includes(item.value)
-                      ? 'green'
-                      : 'black',
-                    fontWeight: 'bold',
-                  }}
-                  checkedCheckBoxColor="green"
-                  uncheckedCheckBoxColor="black"
-                />
-              ))}
-            </View>
-          </View>
-          <View style={{marginTop: 10}}>
-            <View style={BrandAttributeStyle.container}>
-              {renderColour()}
-              <Dropdown
-                style={[
-                  BrandAttributeStyle.dropdown,
-                  isFocus && {borderColor: 'blue'},
-                ]}
-                placeholderStyle={BrandAttributeStyle.placeholderStyle}
-                selectedTextStyle={BrandAttributeStyle.selectedTextStyle}
-                inputSearchStyle={BrandAttributeStyle.inputSearchStyle}
-                iconStyle={BrandAttributeStyle.iconStyle}
-                data={colorData}
-                search
-                maxHeight={300}
-                labelField="label"
-                valueField="value"
-                placeholder={!isFocus ? 'Select Fabric' : '...'}
-                searchPlaceholder="Search..."
-                value={value}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                  setFabric(item.value);
-                  console.log('Fabric id:', item.value);
-                  setIsFocus(false);
+        </View>
+        <View style={{marginLeft: 20, marginTop: 20}}>
+          <Text style={{fontSize: 20, marginBottom: 4}}>Select Colour</Text>
+          <View style={{display: 'flex'}}>
+            {occasionData.map((item, index) => (
+              <CheckBox
+                key={index}
+                isChecked={selectedColour.includes(item.value)}
+                onClick={() => handleColourCheck(item.value)}
+                rightText={item.name}
+                rightTextStyle={{
+                  fontSize: 19,
+                  color: selectedColour.includes(item.value)
+                    ? 'green'
+                    : 'black',
+                  fontWeight: 'bold',
                 }}
-                renderLeftIcon={() => (
-                  <AtSymbolIcon
-                    style={BrandAttributeStyle.icon}
-                    color={isFocus ? 'blue' : 'black'}
-                    name="Safety"
-                    size={20}
-                  />
-                )}
+                checkedCheckBoxColor="green"
+                uncheckedCheckBoxColor="black"
               />
-            </View>
+            ))}
           </View>
-          {/*
+        </View>
+        <View style={{marginLeft: 20, marginTop: 20}}>
+          <Text style={{fontSize: 20, marginBottom: 4}}>Select Occasion</Text>
+          <View style={{display: 'flex'}}>
+            {occasionData.map((item, index) => (
+              <CheckBox
+                key={index}
+                isChecked={selectedOccasions.includes(item.value)}
+                onClick={() => handleOccasionCheck(item.value)}
+                rightText={item.name}
+                rightTextStyle={{
+                  fontSize: 19,
+                  color: selectedOccasions.includes(item.value)
+                    ? 'green'
+                    : 'black',
+                  fontWeight: 'bold',
+                }}
+                checkedCheckBoxColor="green"
+                uncheckedCheckBoxColor="black"
+              />
+            ))}
+          </View>
+        </View>
+        <View style={{marginTop: 10}}>
+          <View style={BrandAttributeStyle.container}>
+            {renderColour()}
+            <Dropdown
+              style={[
+                BrandAttributeStyle.dropdown,
+                isFocus && {borderColor: 'blue'},
+              ]}
+              placeholderStyle={BrandAttributeStyle.placeholderStyle}
+              selectedTextStyle={BrandAttributeStyle.selectedTextStyle}
+              inputSearchStyle={BrandAttributeStyle.inputSearchStyle}
+              iconStyle={BrandAttributeStyle.iconStyle}
+              data={colorData}
+              search
+              maxHeight={300}
+              labelField="label"
+              valueField="value"
+              placeholder={!isFocus ? 'Select Fabric' : '...'}
+              searchPlaceholder="Search..."
+              value={value}
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              onChange={item => {
+                setFabric(item.value);
+                console.log('Fabric id:', item.value);
+                setIsFocus(false);
+              }}
+              renderLeftIcon={() => (
+                <AtSymbolIcon
+                  style={BrandAttributeStyle.icon}
+                  color={isFocus ? 'blue' : 'black'}
+                  name="Safety"
+                  size={20}
+                />
+              )}
+            />
+          </View>
+        </View>
+        {/*
           <View style={{marginTop: 50, marginHorizontal: 'auto'}}>
             <Button title="Choose Photo" onPress={handleChoosePhoto} />
             {media && (
@@ -523,57 +523,56 @@ const ShopAddItem = () => {
           </View>
           */}
 
-          <Button title="Choose Photos" onPress={handleChoosePhoto} />
-          <View style={{marginBottom: 100}}>
-            {media.length > 0 && (
-              <View>
-                {media.map((m, index) => (
-                  <Image
-                    key={index}
-                    source={{uri: m}}
-                    style={{width: 100, height: 100}}
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-          <View
-            style={{
-              marginLeft: 20,
-              marginTop: 20,
-              display: 'flex',
-              flexDirection: 'row',
-            }}>
-            <Text style={{fontSize: 18, marginTop: 15}}>Qty :</Text>
-            <TextInput
-              placeholder="Enter Qty"
-              //style={styles.input}
-              keyboardType="numeric"
-              value={quantity}
-              onChangeText={handleQuantityChange}
-            />
-          </View>
-          <TouchableOpacity
-            onPress={addItem}
-            style={{
-              backgroundColor: 'blue',
-              padding: 8,
-              marginLeft: 20,
-              marginRight: 20,
-              marginTop: 20,
-            }}>
-            <Text
-              style={{
-                color: 'white',
-                fontWeight: 'bold',
-                fontSize: 18,
-                marginHorizontal: 'auto',
-              }}>
-              Add Item
-            </Text>
-          </TouchableOpacity>
+        <Button title="Choose Photos" onPress={handleChoosePhoto} />
+        <View style={{marginBottom: 100}}>
+          {media.length > 0 && (
+            <View>
+              {media.map((m, index) => (
+                <Image
+                  key={index}
+                  source={{uri: m}}
+                  style={{width: 100, height: 100}}
+                />
+              ))}
+            </View>
+          )}
         </View>
-      </ScrollView>
+        <View
+          style={{
+            marginLeft: 20,
+            marginTop: 20,
+            display: 'flex',
+            flexDirection: 'row',
+          }}>
+          <Text style={{fontSize: 18, marginTop: 15}}>Qty :</Text>
+          <TextInput
+            placeholder="Enter Qty"
+            //style={styles.input}
+            keyboardType="numeric"
+            value={quantity}
+            onChangeText={handleQuantityChange}
+          />
+        </View>
+        <TouchableOpacity
+          onPress={addItem}
+          style={{
+            backgroundColor: 'blue',
+            padding: 8,
+            marginLeft: 20,
+            marginRight: 20,
+            marginTop: 20,
+          }}>
+          <Text
+            style={{
+              color: 'white',
+              fontWeight: 'bold',
+              fontSize: 18,
+              marginHorizontal: 'auto',
+            }}>
+            Add Item
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

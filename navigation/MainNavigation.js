@@ -29,6 +29,12 @@ import StartMap from '../components/SearchMap/StartMap';
 import PlaceSearchComponent from '../components/SearchMap/PlaceSearchComponent';
 import ShopAddItem from '../components/Shops/ShopAddItem';
 import InventoryItemDetail from '../components/BaseComponents/InventoryItemDetail';
+import InventoryItemDetailEdit from '../components/BaseComponents/InventoryItemDetailEdit';
+import EditImages from '../components/BaseComponents/EditImages';
+import Shop from '../components/Shops/Shop';
+import MapEnter from '../components/SearchMap/MapEnter';
+import EditProfile from '../components/BaseComponents/EditProfile';
+import MapView from 'react-native-maps';
 
 const Stack = createStackNavigator();
 
@@ -62,6 +68,12 @@ function MainNavigation() {
       <Stack.Screen name={Routes.Map} component={Map} />
       <Stack.Screen name={Routes.StartMap} component={StartMap} />
       <Stack.Screen name={Routes.ShopAddItem} component={ShopAddItem} />
+      <Stack.Screen name={Routes.EditImages} component={EditImages} />
+      <Stack.Screen name={Routes.Shop} component={Shop} />
+      <Stack.Screen
+        name={Routes.InventoryItemDetailEdit}
+        component={InventoryItemDetailEdit}
+      />
       <Stack.Screen
         name={Routes.InventoryItemDetail}
         component={InventoryItemDetail}
@@ -95,6 +107,9 @@ function MainNavigation() {
         name={Routes.PlaceSearchComponent}
         component={PlaceSearchComponent}
       />
+      <Stack.Screen name={Routes.MapEnter} component={MapEnter} />
+      <Stack.Screen name={Routes.EditProfile} component={EditProfile} />
+      <Stack.Screen name={Routes.MapView} component={MapView} />
     </Stack.Navigator>
   );
 }

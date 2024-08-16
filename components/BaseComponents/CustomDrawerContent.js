@@ -15,6 +15,8 @@ import ShopContext from '../../context/ShopContext';
 import {supabase} from '../../createClinet';
 import {useNavigation} from '@react-navigation/native';
 import {Routes} from '../../navigation/Routes';
+import {PencilSquareIcon} from 'react-native-heroicons/solid';
+import {DummyImage} from './CardView';
 var {width, height} = Dimensions.get('window');
 
 function CustomDrawerContent(props) {
@@ -40,6 +42,7 @@ function CustomDrawerContent(props) {
         console.error('Error fetching user data:', error.message);
       } else {
         setUser(data);
+        console.log('User Data is here ', data);
       }
     } else {
       console.log('User ID is undefined');
@@ -87,6 +90,11 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props}>
       <View style={styles.profileContainer}>
+        <TouchableOpacity
+          style={{marginLeft: 220, marginTop: -18}}
+          onPress={() => navigation.navigate(Routes.EditProfile)}>
+          <PencilSquareIcon color="black" size={20} />
+        </TouchableOpacity>
         <View style={{display: 'flex', flexDirection: 'row'}}>
           <Image
             style={{
@@ -99,7 +107,7 @@ function CustomDrawerContent(props) {
               borderWidth: 2,
               borderColor: 'white',
             }}
-            source={require('../../assets/Images/shirt2.jpg')}
+            source={{uri: user.image_path || DummyImage}}
           />
           <View style={{marginLeft: 5}}>
             <Text style={{fontSize: 19, color: 'white', fontFamily: 'bold'}}>
@@ -158,6 +166,7 @@ function CustomDrawerContent(props) {
 
 const styles = StyleSheet.create({
   profileContainer: {
+    marginTop: -5,
     padding: 20,
     backgroundColor: '#8ed1fc',
   },

@@ -32,4 +32,10 @@ export const Routes = {
   PlaceSearchComponent: 'PlaceSearchComponent',
   ShopAddItem: 'ShopAddItem',
   InventoryItemDetail: 'InventoryItemDetail',
+  InventoryItemDetailEdit: 'InventoryItemDetailEdit',
+  EditImages: 'EditImages',
+  Shop: 'Shop',
+  MapEnter: 'MapEnter',
+  EditProfile: 'EditProfile',
+  MapView: 'MapView',
 };

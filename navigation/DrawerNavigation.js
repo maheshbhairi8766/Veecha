@@ -8,7 +8,6 @@ import AddShop from '../components/BaseComponents/AddShop';
 import AddVendor from '../components/BaseComponents/AddVendor';
 export default function DrawerNavigation() {
   const Drawer = createDrawerNavigator();
-
   return (
     <Drawer.Navigator
       drawerContent={props => <CustomDrawerContent {...props} />}

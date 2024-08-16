@@ -47,7 +47,7 @@ export default function MyShopsCardView() {
         return (
           <TouchableOpacity
             key={index}
-            onPress={() => navigation.navigate(Routes.ShopView, item)}>
+            onPress={() => navigation.navigate(Routes.Shop, item)}>
             <View
               style={{
                 borderWidth: 0.5,
