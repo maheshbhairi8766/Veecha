@@ -431,7 +431,7 @@ export default function CardView({data}) {
                         marginLeft: 10,
                       }}>
                       {' '}
-                      400
+                      {shopItem ? shopItem[index]?.price : ''}
                     </Text>
                   </View>
                   <View
